@@ -1,4 +1,6 @@
 const express = require("express"); //!require(express) returns function.
+const sendEmail = require("./util/sendEmail");
+// sendEmail("user@gmail.com", "123456");
 const app = express();
 const usersRouter = require("./routes/users/usersRouter");
 const categoriesRouter = require("./routes/categories/categoriesRouter");

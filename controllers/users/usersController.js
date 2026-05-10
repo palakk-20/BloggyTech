@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/Users/user");
 const generateToken = require("../../util/generateToken");
 const asyncHandler = require("express-async-handler");
+const sendEmail = require("../../util/sendEmail");
 
 //@desc Register new user
 //@route POST : api/v1/users/register
@@ -245,6 +246,29 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc forgot password
+//@route POST : api/v1/users/forgot-password
+//@access public
+const forgotPassword = asyncHandler(async (req, res, next) => {
+  //!fetch email from req.body
+  const { email } = req.body;
+  //!find email in database
+  const userFound = await User.findOne({ email });
+  if (!userFound) {
+    let error = new Error("email is not registered");
+    next(error);
+    return;
+  }
+  //!get reset token from userFound object by calling generatePasswordResetToken method and save userFound object to database
+  const resetToken = await userFound.generatePasswordResetToken();
+  await userFound.save();
+  await sendEmail(userFound.email, resetToken);
+  res.json({
+    status: "Success",
+    message: "Password reset token sent to your email",
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -254,4 +278,5 @@ module.exports = {
   followUser,
   unfollowUser,
   viewOtherProfile,
+  forgotPassword,
 };

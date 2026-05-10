@@ -8,6 +8,7 @@ const {
   viewOtherProfile,
   followUser,
   unfollowUser,
+  forgotPassword,
 } = require("../../controllers/users/usersController");
 const isLoggedIn = require("../../middlewares/isLoggedIn");
 
@@ -28,5 +29,7 @@ usersRouter.get(
 
 usersRouter.put("/follow/:userIdToFollow", isLoggedIn, followUser);
 usersRouter.put("/unfollow/:userIdToUnfollow", isLoggedIn, unfollowUser);
+
+usersRouter.post("/forgot-password", forgotPassword);
 
 module.exports = usersRouter;
