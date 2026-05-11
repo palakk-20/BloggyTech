@@ -142,6 +142,66 @@ const likePost = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc dislike a post
+//@route PUT /api/v1/posts/dislike/:postId
+//@access private
+const dislikePost = asyncHandler(async (req, res, next) => {
+  //!get id of post from params
+  const { postId } = req.params;
+  //!get current user
+  const currentUserId = req.userAuth._id;
+  //!search the post
+  const post = await Post.findById(postId);
+  if (!post) {
+    let error = new Error("Post not found");
+    next(error);
+    return;
+  }
+  //!Add the current userid to dislikes array
+  await Post.findByIdAndUpdate(
+    postId,
+    { $addToSet: { dislikes: currentUserId } },
+    { new: true },
+  );
+  //!remove current userid from likes array
+  post.likes = post.likes.filter(
+    (userId) => userId.toString() != currentUserId.toString(),
+  );
+  //!resave post
+  await post.save();
+  res.json({
+    status: "Success",
+    message: "Post disliked successfully",
+  });
+});
+
+//@desc clap a post
+//@route PUT /api/v1/posts/claps/:postId
+//@access private
+const clapPost = asyncHandler(async (req, res, next) => {
+  //!get id of post from params
+  const { postId } = req.params;
+  //!search the post
+  const post = await Post.findById(postId);
+  if (!post) {
+    let error = new Error("Post not found");
+    next(error);
+    return;
+  }
+  //!increment claps by 1
+  const updatedPost = await Post.findByIdAndUpdate(
+    postId,
+    { $inc: { claps: 1 } },
+    { new: true },
+  );
+
+  res.json({
+    status: "Success",
+    message: "Post clapped successfully",
+    updatedPost,
+  });
+});
+
 module.exports = {
   createPost,
   getPosts,
@@ -149,4 +209,6 @@ module.exports = {
   deletePost,
   updatePost,
   likePost,
+  dislikePost,
+  clapPost,
 };
