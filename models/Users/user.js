@@ -85,6 +85,16 @@ userSchema.methods.generatePasswordResetToken = function () {
   return resetToken;
 };
 
+userSchema.methods.generateAccountVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  this.accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+  this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  return verificationToken;
+};
+
 //!Coverting schema to model
 
 const User = mongoose.model("User", userSchema); //arguments are 1.name which we have to save our model with. 2.schema name which we want to create a model

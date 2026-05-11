@@ -3,6 +3,7 @@ const User = require("../../models/Users/user");
 const generateToken = require("../../util/generateToken");
 const asyncHandler = require("express-async-handler");
 const sendEmail = require("../../util/sendEmail");
+const sendVerificationEmail = require("../../util/sendVerificationEmail");
 const crypto = require("crypto");
 
 //@desc Register new user
@@ -248,7 +249,7 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
 });
 
 //@desc forgot password
-//@route POST : api/v1/users/forgot-password
+//@route PUT : api/v1/users/forgot-password
 //@access public
 const forgotPassword = asyncHandler(async (req, res, next) => {
   //!fetch email from req.body
@@ -271,7 +272,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 });
 
 //@desc reset password
-//@route POST : api/v1/users/reset-password/:resetToken
+//@route PUT : api/v1/users/reset-password/:resetToken
 //@access public
 const resetPassword = asyncHandler(async (req, res, next) => {
   //!get token from params
@@ -308,6 +309,27 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc send account verification mail
+//@route PUT : api/v1/users/account-verification-email
+//@access private
+const accountVerificationEmail = asyncHandler(async (req, res, next) => {
+  //!find current user's email from database by using userAuth._id which we are getting from isLoggedIn middleware and then call generateAccountVerificationToken method to generate account verification token and then save that token to database and then send that token to user's email by using sendVerificationEmail function which we have created in util/sendVerificationEmail.js file.
+  const currentUserId = req?.userAuth?._id;
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  const verifyToken = currentUser.generateAccountVerificationToken();
+  await currentUser.save();
+  await sendVerificationEmail(currentUser.email, verifyToken);
+  res.json({
+    status: "Success",
+    message: `Account verification email sent to your email ${currentUser.email}`,
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -319,4 +341,5 @@ module.exports = {
   viewOtherProfile,
   forgotPassword,
   resetPassword,
+  accountVerificationEmail,
 };
