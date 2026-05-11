@@ -20,7 +20,7 @@ const sendEmail = async (to, resetToken) => {
       // from: process.env.GMAIL_USER,
       to: to,
       subject: "Password Reset Token",
-      html: `<p>You requested for password reset. Click <a href="http://localhost:3000/reset-password/${resetToken}">here</a> to reset your password</p>`,
+      html: `<p>You requested for password reset. Click <a href="http://localhost:3000/reset-password/${resetToken}">here</a>  to reset your password</p> <h1>${resetToken}</h1>`,
     };
     //send email
     const info = await transport.sendMail(message);

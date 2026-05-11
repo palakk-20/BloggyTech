@@ -3,6 +3,7 @@ const User = require("../../models/Users/user");
 const generateToken = require("../../util/generateToken");
 const asyncHandler = require("express-async-handler");
 const sendEmail = require("../../util/sendEmail");
+const crypto = require("crypto");
 
 //@desc Register new user
 //@route POST : api/v1/users/register
@@ -269,6 +270,44 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc reset password
+//@route POST : api/v1/users/reset-password/:resetToken
+//@access public
+const resetPassword = asyncHandler(async (req, res, next) => {
+  //!get token from params
+  const { resetToken } = req.params;
+  //!get new password from req.body
+  const { newPassword } = req.body;
+  //!convert resetToken to hashed token by using crypto module because in database we are storing hashed token
+  console.log("resetToken", resetToken);
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  console.log("hashedToken", hashedToken);
+  //verify token with DB
+  const userFound = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!userFound) {
+    let error = new Error("Invalid or expired token");
+    next(error);
+    return;
+  }
+  //update password of userFound with newPassword and also reset passwordResetToken and passwordResetExpires fields and save the userFound object to database
+  const salt = await bcrypt.genSalt(10);
+  userFound.password = await bcrypt.hash(newPassword, salt);
+  userFound.passwordResetToken = undefined;
+  userFound.passwordResetExpires = undefined;
+  await userFound.save();
+  res.json({
+    status: "Success",
+    message: "Password reset successful",
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -279,4 +318,5 @@ module.exports = {
   unfollowUser,
   viewOtherProfile,
   forgotPassword,
+  resetPassword,
 };
