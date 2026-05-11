@@ -1,13 +1,14 @@
 const express = require("express");
 const {
   createPost,
-  getPosts,
+  getAllPosts,
   getSinglePost,
   deletePost,
   updatePost,
   likePost,
   dislikePost,
   clapPost,
+  schedulePost,
 } = require("../../controllers/posts/postsController");
 const isLoggedIn = require("../../middlewares/isLoggedIn");
 const isAccountVerified = require("../../middlewares/isAccountVerified");
@@ -18,7 +19,7 @@ const postsRouter = express.Router();
 postsRouter.post("/", isLoggedIn, isAccountVerified, createPost);
 
 //!fetch all postss.
-postsRouter.get("/", getPosts);
+postsRouter.get("/", getAllPosts);
 
 //!fetch single post.
 postsRouter.get("/:id", getSinglePost);
@@ -37,5 +38,8 @@ postsRouter.put("/dislike/:postId", isLoggedIn, dislikePost);
 
 //!clap a post
 postsRouter.put("/claps/:postId", isLoggedIn, clapPost);
+
+//!schedule a post
+postsRouter.put("/schedule/:postId", isLoggedIn, schedulePost);
 
 module.exports = postsRouter;

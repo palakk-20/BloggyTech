@@ -54,7 +54,7 @@ const createPost = asyncHandler(async (req, res, next) => {
 //@desc Get all posts
 //@route GET/api/v1/posts/
 //@access public
-const getPosts = asyncHandler(async (req, res, next) => {
+const getAllPosts = asyncHandler(async (req, res, next) => {
   const allPosts = await Post.find({});
   res.status(201).json({
     status: "Success",
@@ -202,13 +202,58 @@ const clapPost = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc Schedule a post
+//@route PUT /api/v1/posts/schedule/:postId
+//@access private
+const schedulePost = asyncHandler(async (req, res, next) => {
+  //!get the data from params and body
+  const { postId } = req.params;
+  const { scheduledAt } = req.body;
+  //!check if post is present and scheduledPublished date is present in body
+  if (!scheduledAt || !postId) {
+    let error = new Error("Invalid request data");
+    next(error);
+    return;
+  }
+  //!Search post in a db
+  const post = await Post.findById(postId);
+  if (!post) {
+    let error = new Error("Post not found");
+    next(error);
+    return;
+  }
+  //!check if current user is author of the post
+  if (post.author.toString() !== req.userAuth._id.toString()) {
+    let error = new Error("You are not authorized to schedule this post");
+    next(error);
+    return;
+  }
+  //!check if requested scheduled publish date is in future and not in past
+  const scheduledDate = new Date(scheduledAt); //converting string to date
+  const currentDate = new Date();
+  if (scheduledDate <= currentDate) {
+    let error = new Error("Scheduled publish date must be in the future");
+    next(error);
+    return;
+  }
+  post.scheduledPublished = scheduledDate;
+  await post.save();
+  const updatedPost = await Post.findById(postId);
+  res.json({
+    status: "Success",
+    message: "Post scheduled successfully at " + scheduledDate.toISOString(),
+    updatedPost,
+  });
+});
+
 module.exports = {
   createPost,
-  getPosts,
+  getAllPosts,
   getSinglePost,
   deletePost,
   updatePost,
   likePost,
   dislikePost,
   clapPost,
+  schedulePost,
 };
