@@ -109,10 +109,44 @@ const updatePost = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc Like a post
+//@route PUT /api/v1/posts/like/:postId
+//@access private
+const likePost = asyncHandler(async (req, res, next) => {
+  //!get id of post from params
+  const { postId } = req.params;
+  //!get current user
+  const currentUserId = req.userAuth._id;
+  //!search the post
+  const post = await Post.findById(postId);
+  if (!post) {
+    let error = new Error("Post not found");
+    next(error);
+    return;
+  }
+  //!Add the current userid to likes array
+  await Post.findByIdAndUpdate(
+    postId,
+    { $addToSet: { likes: currentUserId } },
+    { new: true },
+  );
+  //!remove current userid from dislikes array
+  post.dislikes = post.dislikes.filter(
+    (userId) => userId.toString() != currentUserId.toString(),
+  );
+  //!resave post
+  await post.save();
+  res.json({
+    status: "Success",
+    message: "Post liked successfully",
+  });
+});
+
 module.exports = {
   createPost,
   getPosts,
   getSinglePost,
   deletePost,
   updatePost,
+  likePost,
 };

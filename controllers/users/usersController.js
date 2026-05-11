@@ -330,6 +330,38 @@ const accountVerificationEmail = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc verify account token
+//@route PUT : api/v1/users/verify-account/:verifyToken
+//@access private
+const verifyAccount = asyncHandler(async (req, res, next) => {
+  //get token from params
+  const { verifyToken } = req.params;
+  //convert token to hashed token
+  let cryptoToken = crypto
+    .createHash("sha256")
+    .update(verifyToken)
+    .digest("hex");
+
+  const userFound = await User.findOne({
+    accountVerificationToken: cryptoToken,
+    accountVerificationExpires: { $gt: Date.now() },
+  });
+  if (!userFound) {
+    let error = new Error("Invalid or expired token");
+    next(error);
+    return;
+  }
+  //update userFound object to mark account as verified
+  userFound.isVerified = true;
+  userFound.accountVerificationToken = undefined;
+  userFound.accountVerificationExpires = undefined;
+  await userFound.save();
+  res.json({
+    status: "Success",
+    message: "Account verified successfully",
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -342,4 +374,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   accountVerificationEmail,
+  verifyAccount,
 };

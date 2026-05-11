@@ -5,13 +5,15 @@ const {
   getSinglePost,
   deletePost,
   updatePost,
+  likePost,
 } = require("../../controllers/posts/postsController");
 const isLoggedIn = require("../../middlewares/isLoggedIn");
+const isAccountVerified = require("../../middlewares/isAccountVerified");
 
 const postsRouter = express.Router();
 
 //!create post.
-postsRouter.post("/", isLoggedIn, createPost);
+postsRouter.post("/", isLoggedIn, isAccountVerified, createPost);
 
 //!fetch all postss.
 postsRouter.get("/", getPosts);
@@ -24,5 +26,8 @@ postsRouter.delete("/:id", isLoggedIn, deletePost);
 
 //!update single category
 postsRouter.put("/:id", isLoggedIn, updatePost);
+
+//!like a post
+postsRouter.put("/like/:postId", isLoggedIn, likePost);
 
 module.exports = postsRouter;
