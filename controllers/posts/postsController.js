@@ -64,11 +64,18 @@ const getAllPosts = asyncHandler(async (req, res, next) => {
   const usersBlockingCurrentUserIds = usersBlockingCurrentUser.map(
     (userObj) => userObj._id,
   );
+  //!get current datetime
+  const currentDateTime = new Date();
+  const query = {
+    author: { $nin: usersBlockingCurrentUserIds },
+    $or: [
+      { scheduledPublished: { $lte: currentDateTime } },
+      { scheduledPublished: null },
+    ],
+  };
 
   //!fetch all posts whose author is not in usersBlockingCurrentUserIds array
-  const allPosts = await Post.find({
-    author: { $nin: usersBlockingCurrentUserIds },
-  });
+  const allPosts = await Post.find(query);
   res.status(201).json({
     status: "Success",
     message: "All posts successfully fetched",
