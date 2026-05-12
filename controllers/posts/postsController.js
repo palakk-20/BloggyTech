@@ -75,7 +75,17 @@ const getAllPosts = asyncHandler(async (req, res, next) => {
   };
 
   //!fetch all posts whose author is not in usersBlockingCurrentUserIds array
-  const allPosts = await Post.find(query);
+  const allPosts = await Post.find(query)
+    .populate({
+      path: "author",
+      model: "User",
+      select: "email username role",
+    })
+    .populate({
+      path: "category",
+      model: "Category",
+      select: "name",
+    });
   res.status(201).json({
     status: "Success",
     message: "All posts successfully fetched",

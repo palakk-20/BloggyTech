@@ -26,7 +26,11 @@ const createCategory = asyncHandler(async (req, res, next) => {
 //@route GET/api/v1/categories/
 //@access public
 const getCategory = asyncHandler(async (req, res, next) => {
-  const allcategories = await Category.find({});
+  const allcategories = await Category.find({}).populate({
+    path: "posts",
+    model: "Post",
+    select: "title content author",
+  });
   res.status(201).json({
     status: "Success",
     message: "All catergories successfully fetched",

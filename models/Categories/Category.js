@@ -15,7 +15,7 @@ const categorySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    post: [
+    posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
@@ -24,6 +24,8 @@ const categorySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
 

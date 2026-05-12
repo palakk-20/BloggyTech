@@ -58,9 +58,27 @@ const login = asyncHandler(async (req, res, next) => {
 //@route GET : api/v1/users/profile/:id
 //@access private
 const getProfile = asyncHandler(async (req, res, next) => {
-  console.log(req.userAuth);
-
-  const user = await User.findById(req.userAuth._id);
+  const user = await User.findById(req.userAuth._id)
+    .populate({
+      path: "posts",
+      model: "Post",
+    })
+    .populate({
+      path: "following",
+      model: "User",
+    })
+    .populate({
+      path: "followers",
+      model: "User",
+    })
+    .populate({
+      path: "blockedUsers",
+      model: "User",
+    })
+    .populate({
+      path: "profileViewers",
+      model: "User",
+    });
   res.json({
     status: "Success",
     messgae: "Profile fetched",
