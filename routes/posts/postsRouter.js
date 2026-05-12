@@ -19,7 +19,7 @@ const postsRouter = express.Router();
 postsRouter.post("/", isLoggedIn, isAccountVerified, createPost);
 
 //!fetch all postss.
-postsRouter.get("/", getAllPosts);
+postsRouter.get("/", isLoggedIn, getAllPosts);
 
 //!fetch single post.
 postsRouter.get("/:id", getSinglePost);

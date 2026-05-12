@@ -53,9 +53,22 @@ const createPost = asyncHandler(async (req, res, next) => {
 
 //@desc Get all posts
 //@route GET/api/v1/posts/
-//@access public
+//@access private
 const getAllPosts = asyncHandler(async (req, res, next) => {
-  const allPosts = await Post.find({});
+  const currentUserId = req?.userAuth?._id;
+  //!get all those users who have blocked the current user
+  const usersBlockingCurrentUser = await User.find({
+    blockedUsers: currentUserId,
+  }).select("_id");
+  //!Extract ids of the users who have blocked the current user
+  const usersBlockingCurrentUserIds = usersBlockingCurrentUser.map(
+    (userObj) => userObj._id,
+  );
+
+  //!fetch all posts whose author is not in usersBlockingCurrentUserIds array
+  const allPosts = await Post.find({
+    author: { $nin: usersBlockingCurrentUserIds },
+  });
   res.status(201).json({
     status: "Success",
     message: "All posts successfully fetched",
