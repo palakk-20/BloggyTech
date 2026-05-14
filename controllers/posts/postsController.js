@@ -25,6 +25,7 @@ const createPost = asyncHandler(async (req, res, next) => {
     content,
     category: categoryId,
     author: req?.userAuth?._id,
+    image: req?.file?.path,
   });
 
   //update category by adding post in it.
@@ -49,6 +50,8 @@ const createPost = asyncHandler(async (req, res, next) => {
     user,
     catg,
   });
+  console.log("File uploaded: ", req.file);
+  res.send("done");
 });
 
 //@desc Get all posts
