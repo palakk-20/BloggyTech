@@ -22,6 +22,7 @@ dotenv.config();
 connectDB();
 //!setting up middleware
 app.use(express.json());
+
 //!cors middleware
 app.use(cors());
 

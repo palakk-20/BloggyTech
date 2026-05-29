@@ -14,7 +14,9 @@ const INITIAL_STATE = {
   profile: {},
   userAuth: {
     error: null,
-    userInfo: {},
+    userInfo: localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : null,
   },
 };
 
@@ -25,16 +27,26 @@ export const loginAction = createAsyncThunk(
     //make request
     try {
       console.log("Started login action");
-      const response = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:3000/api/v1/users/login",
         payload,
       );
-      return response;
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
     }
   },
 );
+
+//Logout Action
+export const logoutAction = createAsyncThunk("users/logout", async () => {
+  //make request
+
+  localStorage.removeItem("userInfo");
+  return true;
+});
+
 const usersSlice = createSlice({
   name: "users",
   initialState: INITIAL_STATE,
