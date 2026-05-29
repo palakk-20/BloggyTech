@@ -47,10 +47,29 @@ export const logoutAction = createAsyncThunk("users/logout", async () => {
   return true;
 });
 
+//Register Action
+export const registerAction = createAsyncThunk(
+  "users/register",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    //make request
+    try {
+      console.log("Started register action");
+      const { data } = await axios.post(
+        "http://localhost:3000/api/v1/users/register",
+        payload,
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  },
+);
+
 const usersSlice = createSlice({
   name: "users",
   initialState: INITIAL_STATE,
   extraReducers: (builder) => {
+    //login actions
     builder.addCase(loginAction.pending, (state, action) => {
       state.loading = true;
     });
@@ -65,7 +84,24 @@ const usersSlice = createSlice({
       state.error = action.payload;
       state.success = false;
     });
+
+    //register actions
+    builder.addCase(registerAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(registerAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
+      state.success = true;
+      state.user = action.payload;
+    });
+    builder.addCase(registerAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
+    });
   },
 });
+
 const usersReducer = usersSlice.reducer;
 export default usersReducer;

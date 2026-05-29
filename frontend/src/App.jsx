@@ -6,6 +6,7 @@ import UserProfile from "./components/Users/UserProfile";
 import PublicNavbar from "./components/NavBar/PublicNavbar";
 import PrivateNavbar from "./components/NavBar/PrivateNavbar";
 import { useSelector } from "react-redux";
+import ProtectedRoute from "./components/AuthRoute/ProtectedRoute";
 export default function App() {
   const { userAuth } = useSelector((state) => state.users);
   const isLoggedIn = userAuth?.userInfo?.token;
@@ -16,7 +17,14 @@ export default function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/user-profile" element={<UserProfile />} />
+        <Route
+          path="/user-profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

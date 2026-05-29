@@ -16,7 +16,6 @@ export default function PrivateNavbar() {
     console.log("logout action called");
     dispatch(logoutAction());
     window.location.reload();
-    window.location.href = "/";
   };
   return (
     <Disclosure as="nav" className="bg-white shadow">
