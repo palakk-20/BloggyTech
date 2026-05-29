@@ -36,7 +36,7 @@ export default function PrivateNavbar() {
                     )}
                   </Disclosure.Button>
                 </div>
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex shrink-0 items-center">
                   <img
                     className="block h-8 w-auto lg:hidden"
                     src="https://cdn-icons-png.flaticon.com/512/1458/1458485.png"
@@ -65,16 +65,16 @@ export default function PrivateNavbar() {
                 </div>
               </div>
               <div className="flex items-center">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <Link
                     to={"/admin"}
-                    className="ml-2 relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="ml-2 relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
                     <PlusIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
                     Add New Post
                   </Link>
                 </div>
-                <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
+                <div className="hidden md:ml-4 md:flex md:shrink-0 md:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
                     <div>
@@ -162,7 +162,7 @@ export default function PrivateNavbar() {
             </div>
             <div className="border-t border-gray-200 pt-4 pb-3">
               <div className="flex items-center px-4 sm:px-6">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
