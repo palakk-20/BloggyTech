@@ -27,7 +27,7 @@ export default function PublicNavbar() {
                     )}
                   </Disclosure.Button>
                 </div>
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex shrink-0 items-center">
                   <img
                     className="block h-8 w-auto lg:hidden"
                     src="https://cdn-icons-png.flaticon.com/512/1458/1458485.png"
@@ -68,10 +68,10 @@ export default function PublicNavbar() {
                 </div>
               </div>
               <div className="flex items-center">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <Link
                     to={"/add-post"}
-                    className="ml-2 relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="ml-2 relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
                     <PlusIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
                     Add New Post
