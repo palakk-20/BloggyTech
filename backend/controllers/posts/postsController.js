@@ -279,6 +279,22 @@ const schedulePost = asyncHandler(async (req, res, next) => {
   });
 });
 
+//@desc Get only 4 posts
+//@route GET/api/v1/posts/
+//@access public
+const getPublicPosts = asyncHandler(async (req, res, next) => {
+  const posts = await Post.find({})
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .populate("category")
+    .populate("author");
+  res.status(201).json({
+    status: "Success",
+    message: "Public posts fetched successfully.",
+    posts,
+  });
+});
+
 module.exports = {
   createPost,
   getAllPosts,
@@ -289,4 +305,5 @@ module.exports = {
   dislikePost,
   clapPost,
   schedulePost,
+  getPublicPosts,
 };
