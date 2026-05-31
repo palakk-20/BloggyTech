@@ -25,7 +25,7 @@ const createPost = asyncHandler(async (req, res, next) => {
     content,
     category: categoryId,
     author: req?.userAuth?._id,
-    image: req?.file?.path,
+    image: req?.file?.url,
   });
 
   //update category by adding post in it.
@@ -51,7 +51,6 @@ const createPost = asyncHandler(async (req, res, next) => {
     catg,
   });
   console.log("File uploaded: ", req.file);
-  res.send("done");
 });
 
 //@desc Get all posts
@@ -101,7 +100,9 @@ const getAllPosts = asyncHandler(async (req, res, next) => {
 //@access public
 const getSinglePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId)
+    .populate("author")
+    .populate("category");
   if (!post) {
     let error = new Error("Post not found!");
     next(error);
@@ -118,6 +119,13 @@ const getSinglePost = asyncHandler(async (req, res, next) => {
 //@access private
 const deletePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
+  const post = await Post.findById(postId);
+  const isAuthor =
+    req.userAuth?._id.toString() === post?.author?._id.toString();
+  if (!isAuthor) {
+    throw new Error("Action denied, you are not the creator of this post..");
+  }
+
   await Post.findByIdAndDelete(postId);
   res.status(201).json({
     status: "Success",

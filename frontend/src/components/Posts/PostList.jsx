@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPublicPostAction } from "../../redux/slices/posts/postSlices";
+import { fetchPrivatePostAction } from "../../redux/slices/posts/postSlices";
 import LoadingComponent from "../Alert/LoadingComponent";
 import { Link } from "react-router-dom";
 
-const PublicPosts = () => {
+const PostList = () => {
   //!redux store communication
   const dispatch = useDispatch();
   const { posts, loading, error, success } = useSelector(
@@ -12,7 +12,7 @@ const PublicPosts = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchPublicPostAction());
+    dispatch(fetchPrivatePostAction());
   }, [dispatch]);
 
   return (
@@ -44,10 +44,10 @@ const PublicPosts = () => {
                 <LoadingComponent />
               ) : error ? (
                 <h3 className="text-red-500 text-center">{error?.message}</h3>
-              ) : posts?.posts?.length <= 0 ? (
+              ) : posts?.allPosts?.length <= 0 ? (
                 <h3>No post found</h3>
               ) : (
-                posts?.posts?.map((post) => {
+                posts?.allPosts?.map((post) => {
                   return (
                     <div className="w-full md:w-1/2 px-4 mb-8">
                       <Link
@@ -105,4 +105,4 @@ const PublicPosts = () => {
   );
 };
 
-export default PublicPosts;
+export default PostList;

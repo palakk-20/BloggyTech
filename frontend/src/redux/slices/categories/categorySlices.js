@@ -50,6 +50,15 @@ const categoriesSlice = createSlice({
       state.error = action.payload;
       state.success = false;
     });
+    //!reset error action
+    builder.addCase(resetErrorAction, (state, action) => {
+      state.error = null;
+    });
+
+    //!reset success action
+    builder.addCase(resetSuccessAction, (state, action) => {
+      state.success = false;
+    });
   },
 });
 
