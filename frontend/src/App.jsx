@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/AuthRoute/ProtectedRoute";
 import AddPost from "./components/Posts/AddPost";
 import PostDetails from "./components/Posts/postDetails";
 import PostList from "./components/Posts/postList";
+import UpdatePost from "./components/Posts/UpdatePost";
 export default function App() {
   const { userAuth } = useSelector((state) => state.users);
   const isLoggedIn = userAuth?.userInfo?.token;
@@ -57,6 +58,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/posts/:postId/update"
+          element={
+            <ProtectedRoute>
+              <UpdatePost />
+            </ProtectedRoute>
+          }
+        ></Route>
       </Routes>
     </BrowserRouter>
   );

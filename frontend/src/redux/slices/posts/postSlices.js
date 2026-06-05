@@ -115,7 +115,7 @@ export const deletePostAction = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-
+      // console.log("delete controller run");
       const { data } = await axios.delete(
         `http://localhost:3000/api/v1/posts/${postId}`,
         config,
@@ -125,6 +125,64 @@ export const deletePostAction = createAsyncThunk(
       return rejectWithValue(error?.response?.data);
     }
   },
+);
+
+//update post slice
+// export const updatePostAction = createAsyncThunk(
+//   "post/update",
+//   async (payload, { rejectWithValue, getState, dispatch }) => {
+//     try {
+//       //convert the payload to formdata
+//       const formData = new FormData();
+//       formData.append("title", payload?.title);
+//       // formData.append("content", payload?.content);
+//       formData.append("categoryId", payload?.category);
+//       // formData.append("file", payload?.image);
+
+//       const token = getState().users?.userAuth?.userInfo?.token;
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       };
+//       const { data } = await axios.put(
+//         `http://localhost:3000/api/v1/posts/${payload?.postId}`,
+//         formData,
+//         config,
+//       );
+//       return data;
+//     } catch (error) {
+//       return rejectWithValue(error?.response?.data);
+//     }
+//   },
+// );
+// updatePostAction
+export const updatePostAction = createAsyncThunk(
+  "post/update",
+  async (payload, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `http://localhost:3000/api/v1/posts/${payload?.postId}`,
+        {
+          title: payload.title,
+          category: payload.category,
+        },
+        config
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
 );
 
 //Posts slice
@@ -209,6 +267,21 @@ const postsSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       state.success = false;
+    });
+
+    //! update post
+    builder.addCase(updatePostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(updatePostAction.fulfilled, (state, action) => {
+      state.post = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(updatePostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
     });
 
     //!reset error action

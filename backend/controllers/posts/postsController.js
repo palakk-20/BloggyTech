@@ -121,9 +121,10 @@ const deletePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
   const post = await Post.findById(postId);
   const isAuthor =
-    req.userAuth?._id.toString() === post?.author?._id.toString();
+    req?.userAuth?._id.toString() === post?.author?._id.toString();
   if (!isAuthor) {
-    throw new Error("Action denied, you are not the creator of this post..");
+    let error = new Error("You are not the author");
+    return next(error);
   }
 
   await Post.findByIdAndDelete(postId);
@@ -136,16 +137,41 @@ const deletePost = asyncHandler(async (req, res, next) => {
 //@desc update a post
 //@route PUT/api/v1/posts/:id
 //@access private
+// const updatePost = asyncHandler(async (req, res, next) => {
+//   const postId = req.params.id;
+//   const post = req.body;
+//   const postFound = await Post.findById(postId);
+//     if (!postFound) {
+//         throw new Error("Post not found");
+//     }
+//   const updatedPost = await Post.findByIdAndUpdate(postId, post, {
+//     new: true,
+//     runValidators: true,
+//   });
+//   res.status(201).json({
+//     status: "Success",
+//     message: "Post successfully updated",
+//     updatedPost,
+//   });
+// });
 const updatePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
   const post = req.body;
+  const fetchedPost = await Post.findById(postId);
+  if (!fetchedPost) {
+    let error = new Error("Post not found");
+    error.status = 404;
+    next(error);
+  }
+
   const updatedPost = await Post.findByIdAndUpdate(postId, post, {
     new: true,
     runValidators: true,
   });
-  res.status(201).json({
-    status: "Success",
-    message: "Post successfully updated",
+  await updatedPost.save();
+  res.status(200).json({
+    status: "success",
+    message: "Post updated successfully",
     updatedPost,
   });
 });
